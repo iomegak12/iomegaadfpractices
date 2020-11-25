@@ -74,6 +74,222 @@
 								"referenceName": "AzureFunction1",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Azure Function1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "orderid",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "orderid",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										},
+										{
+											"source": {
+												"name": "orderdate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "orderdate",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										},
+										{
+											"source": {
+												"name": "customer",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customer",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										},
+										{
+											"source": {
+												"name": "product",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "product",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										},
+										{
+											"source": {
+												"name": "units",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "units",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										},
+										{
+											"source": {
+												"name": "billingaddress",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "billingaddress",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										},
+										{
+											"source": {
+												"name": "remarks",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "remarks",
+												"type": "String",
+												"physicalType": "UTF8"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "orderinput",
+									"type": "DatasetReference",
+									"parameters": {
+										"inputContainer": {
+											"value": "@activity('Azure Function1').output.containerName",
+											"type": "Expression"
+										},
+										"folderPath": {
+											"value": "@activity('Azure Function1').output.path",
+											"type": "Expression"
+										},
+										"fileName": {
+											"value": "@activity('Azure Function1').output.blobName",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "orderoutputparquet",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "data",
+										"folder": {
+											"value": "@activity('Azure Function1').output.targetOrganizedFullPath",
+											"type": "Expression"
+										},
+										"file": {
+											"value": "@activity('Azure Function1').output.targetOrganizedFileName",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy data1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[uspUpdateBlobMetadata]",
+								"storedProcedureParameters": {
+									"dlsLocation": {
+										"value": {
+											"value": "@concat(activity('Azure Function1').output.targetOrganizedFullPath, '/', activity('Azure Function1').output.targetOrganizedFileName)",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"recordId": {
+										"value": {
+											"value": "@item().RecordId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureSqlDatabase1",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
