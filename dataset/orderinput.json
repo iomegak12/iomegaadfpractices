@@ -1,0 +1,76 @@
+{
+	"name": "orderinput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"inputContainer": {
+				"type": "string",
+				"defaultValue": "orders"
+			},
+			"folderPath": {
+				"type": "string",
+				"defaultValue": "/"
+			},
+			"fileName": {
+				"type": "string",
+				"defaultValue": "orders-1.csv"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().fileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folderPath",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().inputContainer",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "orderid",
+				"type": "String"
+			},
+			{
+				"name": "orderdate",
+				"type": "String"
+			},
+			{
+				"name": "customer",
+				"type": "String"
+			},
+			{
+				"name": "product",
+				"type": "String"
+			},
+			{
+				"name": "units",
+				"type": "String"
+			},
+			{
+				"name": "billingaddress",
+				"type": "String"
+			},
+			{
+				"name": "remarks",
+				"type": "String"
+			}
+		]
+	}
+}
