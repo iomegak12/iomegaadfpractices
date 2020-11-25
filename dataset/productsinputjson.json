@@ -1,5 +1,5 @@
 {
-	"name": "Json1",
+	"name": "productsinputjson",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage1",

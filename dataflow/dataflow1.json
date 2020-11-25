@@ -20,7 +20,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "Json1",
+						"referenceName": "productsinputjson",
 						"type": "DatasetReference"
 					},
 					"name": "source3"
